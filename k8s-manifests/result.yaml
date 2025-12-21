@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: result
+  labels:
+    app: result
+spec:
+  type: NodePort
+  ports:
+  - port: 5001
+    targetPort: 80
+    nodePort: 31001 # Skor ekranina bu porttan girecegiz
+    name: result
+  selector:
+    app: result
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result-deploy
+  labels:
+    app: result
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: result
+  template:
+    metadata:
+      labels:
+        app: result
+    spec:
+      containers:
+      - name: result
+        image: dockersamples/examplevotingapp_result
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: result
