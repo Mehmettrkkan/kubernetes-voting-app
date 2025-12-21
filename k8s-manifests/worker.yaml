@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deploy
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: dockersamples/examplevotingapp_worker
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        - name: POSTGRES_HOST
+          value: "db" # PostgreSQL servisinin adi
+        - name: REDIS_HOST
+          value: "redis" # Redis servisinin adi
