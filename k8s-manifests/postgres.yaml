@@ -1,0 +1,66 @@
+# 1. DISK TALEBI (Persistent Volume Claim)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  labels:
+    app: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi # Bize 256 MB yer ayir
+
+---
+# 2. VERITABANI SERVISI (Networking)
+apiVersion: v1
+kind: Service
+metadata:
+  name: db # Bu isim onemli! Digerleri veritabani'na "db" diye seslenecek
+  labels:
+    app: postgres
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres
+
+---
+# 3. VERITABANI UYGULAMASI (Deployment)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deploy
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env: # Sifreleri buraya yaziyoruz (Prod ortaminda Secret kullanilir!)
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        volumeMounts: # Diski konteynerin icine bagliyoruz
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+      volumes: # Yukarida talep ettigimiz diski tanimliyoruz
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
