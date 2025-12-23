@@ -31,12 +31,17 @@ spec:
       labels:
         app: vote
     spec:
-	imagePullSecrets:      # <--- BU SATIRI EKLE
+	imagePullSecrets:      
       	- name: regcred
       containers:
       - name: vote
         image: mturkkan/voting-app-vote:latest
         imagePullPolicy: IfNotPresent
+env:
+        - name: OPTION_A
+          value: "Galatasaray"
+        - name: OPTION_B
+          value: "Fenerbahce"
         ports:
         - containerPort: 80
           name: vote
