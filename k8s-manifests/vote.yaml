@@ -31,6 +31,8 @@ spec:
       labels:
         app: vote
     spec:
+	imagePullSecrets:      # <--- BU SATIRI EKLE
+      	- name: regcred
       containers:
       - name: vote
         image: dockersamples/examplevotingapp_vote
