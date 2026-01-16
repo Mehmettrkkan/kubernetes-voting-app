@@ -5,15 +5,14 @@ metadata:
   labels:
     app: vote
 spec:
-  type: NodePort # Disaridan erisim icin kapi aciyoruz
+  type: NodePort
   ports:
   - port: 5000
     targetPort: 80
-    nodePort: 31000 
+    nodePort: 31000
     name: vote
   selector:
     app: vote
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,13 +30,13 @@ spec:
       labels:
         app: vote
     spec:
-	imagePullSecrets:      
-      	- name: regcred
+      imagePullSecrets:
+      - name: regcred
       containers:
       - name: vote
         image: mturkkan/voting-app-vote:latest
-        imagePullPolicy: IfNotPresent
-env:
+        imagePullPolicy: Always
+        env:
         - name: OPTION_A
           value: "Galatasaray"
         - name: OPTION_B
