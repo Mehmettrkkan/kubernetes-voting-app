@@ -1,0 +1,32 @@
+# 1. KURAL: Varsayılan olarak tüm trafiği REDDET (Default Deny)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: default
+spec:
+  podSelector: {} # Tüm podlar
+  policyTypes:
+  - Ingress
+  - Egress
+---
+# 2. KURAL: Vote uygulamasının Redis'e erişmesine İZİN VER
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-vote-to-redis
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: redis # Hedef: Redis
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: vote # Kaynak: Vote
+    ports:
+    - protocol: TCP
+      port: 6379
